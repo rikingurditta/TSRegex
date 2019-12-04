@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<HTML>
+    <head>
+        <meta charset="utf-8">
+    </head>
+    <body>
+        <div id="hi"></div>
+    </body>
+    <style type="text/css">
+        body {
+            font-family: 'Consolas'
+        }
+    </style>
+    <script type="text/javascript" src="nfa.js"></script>
+    <script type="text/javascript" src="regex.js"></script>
+    <script type="text/javascript">
+        (function() {
+            let x = new RESequence([new RESymbol("a"), new RESymbol("b"), new RESymbol("c")]);
+            let y = new RESequence([x, x]);
+            // console.log(x.getNFA().checkString("abc") + " should be true");
+            console.log(y.getNFA().checkString("abc") + " should be true");
+            console.log(y.getNFA().checkString("abcabc") + " should be true");
+        })();
+    </script>
+</HTML>
