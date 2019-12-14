@@ -1,4 +1,4 @@
-var EPSILON = "ε";
+var EPSILON = "";
 
 // abstract class for parsed regular expressions
 class Regex {

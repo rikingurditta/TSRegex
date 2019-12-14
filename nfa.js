@@ -1,4 +1,4 @@
-var EPSILON = "ε";
+var EPSILON = "";
 
 // extending the functionality of the builtin Set
 class NSet extends Set {
