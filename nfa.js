@@ -7,17 +7,17 @@ class NSet extends Set {
 		if (this.size != set2.size) {
 			return false;
 		}
-		this.forEach(function(item) {
+		for (let item of this) {
 			if (!set2.has(item)) {
 				return false;
 			}
-		});
+		};
 		let set1 = this;
-		set2.forEach(function(item) {
-			if (!set1.has(item)) {
+		for (let item of set2) {
+			if (!this.has(item)) {
 				return false;
 			}
-		});
+		}
 		return true;
 	}
 
@@ -119,9 +119,8 @@ class NFA {
 	static transitionStates(states, symbol) {
 		// return set of states reached
 		let nextStates = new NSet();
-		states.forEach(function(state) {
-			nextStates.addAll(state.transition(symbol));
-		});
+		states.forEach(
+			(state) => nextStates.addAll(state.transition(symbol)));
 		return nextStates;
 	}
 
@@ -160,11 +159,11 @@ class NFA {
 	// return set of all accepting states in this NFA
 	getAcceptingStates() {
 		let out = new NSet();
-		this.states.forEach(function(state) {
+		for (let state of this.states) {
 			if (state.result()) {
 				out.add(state);
 			}
-		});
+		}
 		return out;
 	}
 

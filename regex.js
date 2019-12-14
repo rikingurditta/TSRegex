@@ -90,9 +90,9 @@ class REStar extends Regex {
 		let start = new NFAState("*start", {}, true);
 		let out = new NFA(start, new NSet([start]));
 		let insideNFA = this.inside.getNFA();
-		insideNFA.getAcceptingStates().forEach(function(state) {
+        for (let state of insideNFA.getAcceptingStates()) {
 			state.addTransition(insideNFA.start)
-		});
+		}
 		out.append(insideNFA);
 		return out;
 	}
