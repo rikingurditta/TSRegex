@@ -1,5 +1,8 @@
 {
 	"compilerOptions": {
-        "lib": ["es6", "dom"]
+        "lib": ["es6", "dom"],
+        "target": "es6",
+        "incremental": true,
+        "outDir": "./js"
     }
 }
