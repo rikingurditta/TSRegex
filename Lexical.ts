@@ -1,4 +1,4 @@
-enum Token { Symbol, Curly, Square, SquareComp, Paren, Repeat, Or, And, Caret, End, Escape }
+export enum Token { Symbol, Curly, Square, SquareComp, Paren, Repeat, Star, Or, And, Caret, End, Escape }
 
 const metaToToken: { [w: string]: Token } = {
 	"{": Token.Curly,
@@ -7,9 +7,9 @@ const metaToToken: { [w: string]: Token } = {
 	"]": Token.Square,
 	"(": Token.Paren,
 	")": Token.Paren,
-	"?": Token.Square,
+	"?": Token.Repeat,
 	"+": Token.Repeat,
-	"*": Token.Repeat,
+	"*": Token.Star,
 	"|": Token.Or,
 	"^": Token.Caret,
 	"$": Token.End,
@@ -26,6 +26,7 @@ const forwardToBack: { [s: string]: string } = {
 
 
 // return an array of pairs of tokens and symbols for the regex string
+// TODO: properly tokenize numbers inside curlies aka xyz{3,5}
 function tokenize(w: String): [Token, string][] {
 	let out: [Token, string][] = []
 
