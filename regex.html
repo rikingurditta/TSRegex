@@ -16,8 +16,8 @@
     <script src="js/Regex.js" type="module"></script>
     <script type="text/javascript">
         (function() {
-            let x = new RESequence([new RESymbol("a"), new RESymbol("b"), new RESymbol("c")]);
-            let y = new RESequence([x, x]);
+            let x = new REConcat([new RESymbol("a"), new RESymbol("b"), new RESymbol("c")]);
+            let y = new REConcat([x, x]);
             // console.log(x.getNFA().checkString("abc") + " should be true");
             console.log(y.getNFA().checkString("abc") + " should be true");
             console.log(y.getNFA().checkString("abcabc") + " should be true");

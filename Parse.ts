@@ -1,5 +1,5 @@
 import { Token, brackets, forward, tokenize } from './Lexical'
-import { Regex, RESymbol, RESequence, RERepeat, REStar, REPlus } from './Regex'
+import { Regex, RESymbol, REConcat, RERepeat, REStar, REPlus } from './Regex'
 
 
 // turns list of token-value pairs into Regex object
@@ -37,7 +37,7 @@ function reduceSequence(lst: Array<Regex | [Token, string]>): Array<Regex | [Tok
 				j += 1;
 			}
 			if (j > 1) {
-				out.push(new RESequence(lst.slice(i, j)));
+				out.push(new REConcat(lst.slice(i, j)));
 			} else {
 				out.push(lst[i]);
 			}
