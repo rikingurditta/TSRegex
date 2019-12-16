@@ -3,7 +3,7 @@ import {EPSILON, NFAState, NFA} from "./NFA";
 
 
 // abstract class for parsed regular expressions
-class Regex {
+export class Regex {
 	// get the NFA which accepts the strings matched by this regex
 	getNFA(): NFA {
 		throw new Error('Not implemented!');
@@ -12,7 +12,7 @@ class Regex {
 
 
 // parsed regular expression for a single symbol
-class RESymbol extends Regex {
+export class RESymbol extends Regex {
 	symbol: string;
 
 	// create a new symbol regex
@@ -36,7 +36,7 @@ class RESymbol extends Regex {
 
 
 // parsed regular expression for a sequence of regexes
-class RESequence extends Regex {
+export class RESequence extends Regex {
 	// the regexes to be concatenated
 	subs: Regex[]
 
@@ -64,7 +64,7 @@ class RESequence extends Regex {
 
 // parsed regular expression for applying {num} to a regex,
 // aka repeating a regex num times
-class RERepeat extends Regex {
+export class RERepeat extends Regex {
 	// the regex to be repeated
 	inside: Regex;
 	// how many times it should be repeated
@@ -90,7 +90,7 @@ class RERepeat extends Regex {
 
 // parsed regular expression for applying * to a regex, aka repeating it
 // an arbitrary number of times
-class REStar extends Regex {
+export class REStar extends Regex {
 	// the regex to be repeated
 	inside: Regex;
 
@@ -116,7 +116,7 @@ class REStar extends Regex {
 
 
 // parsed regular expression for applying * to a regex
-class REPlus extends Regex {
+export class REPlus extends Regex {
 	// the regex to be repeated
 	inside: Regex;
 

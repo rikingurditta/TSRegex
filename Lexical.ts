@@ -15,8 +15,8 @@ const metaToToken: { [w: string]: Token } = {
 	"$": Token.End,
 	"\\": Token.Escape,
 }
-const brackets = new Set<Token>([Token.Curly, Token.Square, Token.SquareComp, Token.Paren])
-const forward = new Set<String>(["{", "[", "[^", "("]);
+export const brackets = new Set<Token>([Token.Curly, Token.Square, Token.SquareComp, Token.Paren])
+export const forward = new Set<String>(["{", "[", "[^", "("]);
 const forwardToBack: { [s: string]: string } = {
 	"{": "}",
 	"[": "]",
@@ -27,7 +27,7 @@ const forwardToBack: { [s: string]: string } = {
 
 // return an array of pairs of tokens and symbols for the regex string
 // TODO: properly tokenize numbers inside curlies aka xyz{3,5}
-function tokenize(w: String): [Token, string][] {
+export function tokenize(w: String): [Token, string][] {
 	let out: [Token, string][] = []
 
 	// whether the next character should be escaped
