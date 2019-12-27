@@ -36,7 +36,7 @@ export class RESymbol extends Regex {
 
 
 // parsed regular expression for a sequence of regexes
-export class RESequence extends Regex {
+export class REConcat extends Regex {
 	// the regexes to be concatenated
 	subs: Regex[]
 
@@ -83,7 +83,7 @@ export class RERepeat extends Regex {
 		for (let i = 0; i < this.num; i += 1) {
 			reList.push(this.inside);
 		}
-		return new RESequence(reList).getNFA();
+		return new REConcat(reList).getNFA();
 	}
 }
 
@@ -129,6 +129,6 @@ export class REPlus extends Regex {
 
 	// get the NFA which accepts arbitrary repetitions of the inside regex
 	getNFA(): NFA {
-		return new RESequence([this.inside, new REStar(this.inside)]).getNFA();
+		return new REConcat([this.inside, new REStar(this.inside)]).getNFA();
 	}
 }
