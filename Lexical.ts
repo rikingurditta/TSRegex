@@ -110,7 +110,6 @@ function wellFormedBrackets(s: string): boolean {
 			curly = false;
 		}
 		if (curly && !(digits.has(char) || char == ',')) {
-			console.log('hi', char);
 			return false;
 		}
 		if (!curly && char == '{') {
@@ -138,6 +137,5 @@ function wellFormedBrackets(s: string): boolean {
 	return stack.length == 0;
 }
 
-console.log(wellFormedBrackets('a{1,2}'));
-console.log(tokenize('a{1,2}b{3,3}'));
-
+// console.log(wellFormedBrackets('a{1,2}'));
+// console.log(tokenize('a{1,2}b{3,3}'));

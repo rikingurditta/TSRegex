@@ -49,7 +49,7 @@ function reduceSequence(lst: ParseList): ParseList {
 			}
 			if (count > 1) {
 				// if there are more than one adjacent regex, concatenate them
-				out.push(new REConcat(lst.slice(i, count)));
+				out.push(new REConcat(<Regex[]>lst.slice(i, count)));
 			} else {
 				// no need to concatenate only one regex
 				out.push(lst[i]);
@@ -63,3 +63,37 @@ function reduceSequence(lst: ParseList): ParseList {
 	}
 	return out;
 }
+
+
+// reduces a regex followed by a repeat specification into an RERepeat object
+function reduceRepeat(lst: ParseList): ParseList {
+	let out: ParseList = [];
+	let i = 0;
+	let prev = null;
+	while (i < lst.length) {
+		if (prev instanceof Regex && lst[i] instanceof Array && lst[i][0] == Token.Curly) {
+			let currTok = lst[i][0];
+			let currStr = lst[i][1];
+			out.pop();
+			out.push(new RERepeat(prev, parseCurlyNums(currStr)[0], parseCurlyNums(currStr)[1]))
+		}
+		prev = lst[i];
+		i += 1;
+	}
+	return out;
+}
+
+// parse the
+function parseCurlyNums(str: string): [number, number] {
+	let x = str.split(',');
+	if (x.length == 0) {
+		return [0, 0]
+	} else if (x.length == 1) {
+		return [parseInt(x[0]), parseInt(x[0])];
+	} else {
+		return [parseInt(x[0]), parseInt(x[1])]
+	}
+}
+
+
+// console.log(reduceRepeat([new RESymbol('a'), [Token.Curly, '10,200']]))
