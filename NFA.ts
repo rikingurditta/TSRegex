@@ -19,7 +19,7 @@ export class NFAState {
 	accepting: boolean;
 
 	// create a new state, which is either accepting or non-accepting
-	constructor(name, transitionDict, accepting) {
+	constructor(name: string, transitionDict: TransitionDict, accepting: boolean) {
 		this.name = name;
 		this.transitionDict = transitionDict;
 		this.accepting = accepting;
@@ -27,7 +27,7 @@ export class NFAState {
 
 
 	// return the states that are reached by transitioning based on symbol
-	transition(symbol) {
+	transition(symbol: string) {
 		if (!(symbol in this.transitionDict)) {
 			this.transitionDict[symbol] = new NSet<NFAState>();
 		}
@@ -42,7 +42,7 @@ export class NFAState {
 
 
 	// add a transition rule for this state
-	addTransition(symbol, state) {
+	addTransition(symbol: string, state: NFAState) {
 		if (symbol in this.transitionDict) {
 			this.transitionDict[symbol].add(state);
 		} else {
@@ -60,7 +60,7 @@ export class NFA {
 	states: NSet<NFAState>;
 
 	// create a new NFA, whose starting state is start
-	constructor(start, states) {
+	constructor(start: NFAState, states: NSet<NFAState>) {
 		this.start = start;
 		this.states = states;
 	}
@@ -101,7 +101,7 @@ export class NFA {
 	}
 
 	// transition all states in given set based on given symbol
-	static transitionStates(states, symbol): NSet<NFAState> {
+	static transitionStates(states: NSet<NFAState>, symbol: string): NSet<NFAState> {
 		// return set of states reached
 		let nextStates = new NSet<NFAState>();
 		states.forEach(
@@ -111,7 +111,7 @@ export class NFA {
 
 
 	// do epsilon transitions until no new state is reached
-	static doAllEpsilonTransitions(states): NSet<NFAState> {
+	static doAllEpsilonTransitions(states: NSet<NFAState>): NSet<NFAState> {
 		// return states (arg) as well as all states reached by doing all possible epsilon transitions
 		// does not mutate states
 		// e.g. if the NFA is qO -e-> q1 -e-> q2 and states is {q0}, return {q0, q1, q2}
@@ -124,7 +124,7 @@ export class NFA {
 	}
 
 	// return set with names of states
-	static stateNames(states): NSet<string> {
+	static stateNames(states: NSet<NFAState>): NSet<string> {
 		let names = new NSet<string>();
 		states.forEach(
 			(state) => names.add(state.name));
@@ -134,7 +134,7 @@ export class NFA {
 
 	// return set with names of all states in this NFA
 	getStateNames(): NSet<string> {
-		return NFA.stateNames(this);
+		return NFA.stateNames(this.states);
 	}
 
 
@@ -151,7 +151,7 @@ export class NFA {
 
 
 	// mutating append function
-	append(other) {
+	append(other: NFA) {
 		// "concatenates" the NFAs, aka makes the accepting states of this
 		// lead to the starting state of other
 		this.getAcceptingStates().forEach(function(state) {
