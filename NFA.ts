@@ -1,12 +1,12 @@
 import NSet from "./NSet"
 
 // the empty string, used for epsilon transitions
-export var EPSILON = "";
+export var EPSILON = '';
 
 // data format for transition dictionaries
 interface TransitionDict {
-	symbol: string;
-	stateSet: NSet<NFAState>;
+	symbol?: string;
+	stateSet?: NSet<NFAState>;
 }
 
 
@@ -78,9 +78,6 @@ export class NFA {
 		for (let i = 0; i < w.length; i += 1) {
 			// transition based on current symbol
 			nextStates = NFA.transitionStates(currentStates, w[i]);
-
-			// add epsilon transition for current states to nextStates
-			nextStates.addAll(NFA.transitionStates(currentStates, EPSILON));
 
 			// do all possible epsilon transitions
 			nextStates = NFA.doAllEpsilonTransitions(nextStates);
