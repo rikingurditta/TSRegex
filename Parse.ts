@@ -4,13 +4,14 @@ import { Regex, RESymbol, REConcat, RERepeat, REStar, REPlus } from './Regex'
 
 // partially-parsed tree - list of Regexes and token-value pairs
 // is fully parsed when completely reduced to a list of a single Regex
-type ParseTree = Array<Regex | [Token, string]>;
+type Pair = [Token, string];
+type ParseList = Array<Regex | Pair>;
 
 
 // turns list of token-value pairs into Regex object
-function buildTree(lst: [Token, string][]): Regex {
+function buildTree(lst: Pair[]): Regex {
 	// bottom-up parsing
-	let curr: ParseTree = lst;
+	let curr: ParseList = lst;
 	curr = reduceSymbol(curr);
 	curr = reduceSequence(curr);
 	return null;
@@ -18,8 +19,8 @@ function buildTree(lst: [Token, string][]): Regex {
 
 
 // reduces symbols into RESymbols
-function reduceSymbol(lst: ParseTree): ParseTree {
-	let out: ParseTree = [];
+function reduceSymbol(lst: ParseList): ParseList {
+	let out: ParseList = [];
 	for (let x of lst) {
 		if ((x instanceof Array) && (x[0] == Token.Symbol)) {
 			// if item's token is Symbol, convert to Regex for the symbol
@@ -35,8 +36,8 @@ function reduceSymbol(lst: ParseTree): ParseTree {
 
 // reduces sequences of Regexes into a concatenation
 // TODO: update to not concatenate symbols within []
-function reduceSequence(lst: ParseTree): ParseTree {
-	let out: ParseTree = [];
+function reduceSequence(lst: ParseList): ParseList {
+	let out: ParseList = [];
 	// need manual iteration because need multiple indices
 	let i = 0;
 	while (i < lst.length) {
