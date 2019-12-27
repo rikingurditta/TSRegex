@@ -132,3 +132,6 @@ export class REPlus extends Regex {
 		return new REConcat([this.inside, new REStar(this.inside)]).getNFA();
 	}
 }
+
+globalThis.RESymbol = RESymbol;
+globalThis.REConcat = REConcat;

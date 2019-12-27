@@ -1,7 +1,7 @@
 {
 	"compilerOptions": {
         "lib": ["es6", "dom"],
-        "target": "es3",
+        "target": "es6",
         "downlevelIteration": true,
         "incremental": true,
         "outDir": "./js"
