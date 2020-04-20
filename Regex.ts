@@ -50,14 +50,17 @@ export class REConcat extends Regex {
 
 	// get the NFA which accepts this sequence of regexes
 	getNFA(): NFA {
-		if (this.subs.length == 0) {
-			let s = new NFAState("empty sequence", {}, false);
-			return new NFA(s, new NSet([s]));
-		}
+		// why was i filtering out empty sequences?
+		// keeping this code here in case i realize it's necessary
+		// if (this.subs.length == 0) {
+		// 	let s = new NFAState("empty sequence", {}, false);
+		// 	return new NFA(s, new NSet([s]));
+		// }
 		// concatenate all NFAs in order to make NFA which accepts sequence
-		let start = this.subs[0].getNFA();
-		for (let i = 1; i < this.subs.length; i += 1) {
-			start.append(this.subs[i].getNFA());
+		let startState = new NFAState("start_concat", {}, true);
+		let start = new NFA(startState, new NSet([startState]));
+		for (let x of this.subs) {
+			start.append(x.getNFA());
 		}
 		return start;
 	}

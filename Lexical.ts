@@ -57,8 +57,7 @@ export function tokenize(w: String): [Token, string][] {
 				} else {
 					curlyInside += s;
 				}
-			}
-			if (escape && !curly) {
+			} else {
 				// if s is not a metacharacter or if it is escaped, add it as a symbol
 				out.push([Token.Symbol, s])
 				escape = false;
