@@ -75,9 +75,11 @@ function reduceSequence(lst: ParseList): ParseList {
 	let square = false;
 	while (i < lst.length) {
 		if (lst[i] instanceof Array) {
-			if (lst[i][0] == Token.Square)
+			let tok = lst[i][0];
+			let str = lst[i][1];
+			if (tok == Token.Square && str == '[' || tok == Token.SquareComp)
 				square = true;
-			else if (lst[i][0] == Token.SquareComp)
+			else if (tok = Token.Square && str == ']')
 				square = false;
 		}
 		if (lst[i] instanceof Regex && !square) {  // if a [ has not been closed, do nothing
@@ -150,6 +152,7 @@ function parseCurlyNums(str: string): [number, number] {
 let r = buildTree(tokenize("abc[abc]d?"));
 console.log(r);
 console.log(r.getNFA().checkString("abcc"));
+console.log(r.getNFA().checkString("abccd"));
 
 // let s = buildTree(tokenize("s?"));
 // console.log(s);
