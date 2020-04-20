@@ -1,5 +1,5 @@
 import { Token, brackets, forward, tokenize } from './Lexical'
-import { Regex, RESymbol, REConcat, RERepeat, REStar, REPlus } from './Regex'
+import { Regex, RESymbol, REConcat, RERepeat, REStar, REPlus, REOr } from './Regex'
 
 
 // partially-parsed tree - list of Regexes and token-value pairs
@@ -13,8 +13,10 @@ function buildTree(lst: Pair[]): Regex {
 	// bottom-up parsing
 	let curr: ParseList = lst;
 	curr = reduceSymbol(curr);
+	curr = reduceSquare(curr);
+	curr = reduceRepeat(curr);
 	curr = reduceSequence(curr);
-	return null;
+	return <Regex> curr[0];
 }
 
 
@@ -34,22 +36,59 @@ function reduceSymbol(lst: ParseList): ParseList {
 }
 
 
+/*
+ * Reduces square brackets, i.e. optionals
+ * Assumes that everything inside square brackets is a Regex
+ */
+function reduceSquare(lst: ParseList): ParseList {
+	let out: ParseList = [];
+	let square = false;
+	let currSquare = [];
+	for (let x of lst) {
+		if (x instanceof Array && x[0] == Token.Square) {
+			// toggle square flag
+			if (x[1] == '[') {
+				square = true;
+			} else {
+				square = false;
+				if (currSquare != []) {
+					out.push(new REOr(currSquare));
+				}
+			}
+			currSquare = [];
+		} else if (square) {  // if square flag is on, push to square contents
+			currSquare.push(x);
+		} else {
+			out.push(x);
+		}
+	}
+	return out;
+}
+
+
 // reduces sequences of Regexes into a concatenation
 // TODO: update to not concatenate symbols within []
 function reduceSequence(lst: ParseList): ParseList {
 	let out: ParseList = [];
 	// need manual iteration because need multiple indices
 	let i = 0;
+	let square = false;
 	while (i < lst.length) {
-		if (lst[i] instanceof Regex) {
+		if (lst[i] instanceof Array) {
+			if (lst[i][0] == Token.Square)
+				square = true;
+			else if (lst[i][0] == Token.SquareComp)
+				square = false;
+		}
+		if (lst[i] instanceof Regex && !square) {  // if a [ has not been closed, do nothing
 			// count how many regexes are adjacent
-			let count = i;
-			while (count < lst.length && lst[count] instanceof Regex) {
+			let count = 0;
+			while (i + count < lst.length && lst[i + count] instanceof Regex)
 				count += 1;
-			}
+
 			if (count > 1) {
 				// if there are more than one adjacent regex, concatenate them
-				out.push(new REConcat(<Regex[]>lst.slice(i, count)));
+				out.push(new REConcat(<Regex[]>lst.slice(i, i + count)));
 			} else {
 				// no need to concatenate only one regex
 				out.push(lst[i]);
@@ -69,13 +108,26 @@ function reduceSequence(lst: ParseList): ParseList {
 function reduceRepeat(lst: ParseList): ParseList {
 	let out: ParseList = [];
 	let i = 0;
-	let prev = null;
+	let prev = null;  // keep track of previous list item
 	while (i < lst.length) {
-		if (prev instanceof Regex && lst[i] instanceof Array && lst[i][0] == Token.Curly) {
-			let currTok = lst[i][0];
-			let currStr = lst[i][1];
-			out.pop();
-			out.push(new RERepeat(prev, parseCurlyNums(currStr)[0], parseCurlyNums(currStr)[1]))
+		if (prev instanceof Regex && lst[i] instanceof Array) {
+			let tok = lst[i][0];
+			let str = lst[i][1];
+			if (tok == Token.Curly) {
+				out.pop();  // remove prev item, replace with appropriately repeated prev
+				out.push(new RERepeat(prev, parseCurlyNums(str)[0], parseCurlyNums(str)[1]))
+			} else if (tok == Token.Repeat) {
+				out.pop();  // remove prev item, replace with appropriately repeated prev
+				if (str == '?') {
+					// x? = epsilon or x
+					out.push(new RERepeat(prev, 0, 1));
+				} else if (str == '+') {
+					// x+ = xx*
+					out.push(new REPlus(prev));
+				}
+			}
+		} else {
+			out.push(lst[i]);
 		}
 		prev = lst[i];
 		i += 1;
@@ -95,5 +147,19 @@ function parseCurlyNums(str: string): [number, number] {
 	}
 }
 
+let r = buildTree(tokenize("abc[abc]d?"));
+console.log(r);
+console.log(r.getNFA().checkString("abcc"));
 
-// console.log(reduceRepeat([new RESymbol('a'), [Token.Curly, '10,200']]))
+// let s = buildTree(tokenize("s?"));
+// console.log(s);
+// console.log(s.getNFA());
+// console.log(s.getNFA().checkString(""));
+// console.log(s.getNFA().checkString("s"));
+// console.log(s.getNFA().checkString("ss"));
+
+// let t = new RERepeat(new RESymbol("a"), 0, 1);
+// console.log(t);
+// console.log(t.getNFA());
+// console.log(t.getNFA().checkString(""));
+// console.log(t.getNFA().checkString("a"));
