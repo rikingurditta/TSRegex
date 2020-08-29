@@ -22,12 +22,13 @@ class StackThingy {
 }
 
 export default function compile(str: string, captures = []) {
-    let out = new StackThingy();
+    let orGroups = [[]];
+    let currOut = orGroups[0];
     for (let i = 0; i < str.length; i++) {
         let char = str.charAt(i);
 
         if (!specialChars.has(char))
-            out.push(new RESymbol(char));
+            currOut.push(new RESymbol(char));
 
         if (char == '[') {
             let inside = [];
@@ -42,7 +43,7 @@ export default function compile(str: string, captures = []) {
                 // TODO
             }
             else {
-                out.push(new REOr(inside));
+                currOut.push(new REOr(inside));
             }
         }
 
@@ -56,22 +57,27 @@ export default function compile(str: string, captures = []) {
             let repeatMax = parseInt(x[0]);
             if (x.length == 2)
                 repeatMax = parseInt(x[1]);
-            let inside = out.pop();
-            out.push(new RERepeat(inside, repeatMin, repeatMax))
+            let inside = currOut.pop();
+            currOut.push(new RERepeat(inside, repeatMin, repeatMax))
         }
 
         if (char == '?') {
-            let inside = out.pop();
-            out.push(new RERepeat(inside, 0, 1));
+            let inside = currOut.pop();
+            currOut.push(new RERepeat(inside, 0, 1));
         }
 
         if (char == '+') {
-            let inside = out.pop();
-            out.push(new REConcat([inside, new REStar(inside)]));
+            let inside = currOut.pop();
+            currOut.push(new REConcat([inside, new REStar(inside)]));
+        }
+
+        if (char == '*') {
+            currOut.push(new REStar(currOut.pop()));
         }
 
         if (char == '|') {
-            out.or = true;
+            orGroups.push([]);
+            currOut = orGroups[orGroups.length - 1];
         }
 
         if (char == '(') {
@@ -86,12 +92,18 @@ export default function compile(str: string, captures = []) {
             }
             end--;
             let sub = compile(str.substring(i + 1, end), captures)
-            out.push(sub);
+            currOut.push(sub);
             captures.push(sub);
             i = end;
         }
     }
-    return new REConcat(out.arr);
+    let out = [];
+    let z = 0;
+    for (let group of orGroups) {
+        out.push(new REConcat(group));
+        z++;
+    }
+    return new REOr(out);
 }
 
 let nfa = compile('a|(x[abcde]z)').getNFA();
@@ -101,4 +113,3 @@ console.log(nfa.checkString('a'));
 console.log(nfa.checkString('x'));
 console.log(nfa.checkString('xez'));
 console.log(nfa.checkString('xz'));
-
