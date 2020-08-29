@@ -3,24 +3,6 @@ import { Regex, RESymbol, REConcat, RERepeat, REStar, REPlus, REOr } from './Reg
 
 const specialChars = new NSet("{}[]()?+*|^$\\");
 
-class StackThingy {
-    arr = [];
-    or = false;
-
-    push(item) {
-        if (this.or) {
-            let x = this.arr.pop();
-            this.arr.push(new REOr([x, item]));
-        } else {
-            this.arr.push(item);
-        }
-    }
-
-    pop() {
-        return this.arr.pop();
-    }
-}
-
 export default function compile(str: string, captures = []) {
     let orGroups = [[]];
     let currOut = orGroups[0];
