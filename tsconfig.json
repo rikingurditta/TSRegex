@@ -2,12 +2,13 @@
     "compilerOptions": {
         "lib": [
             "es6",
-            "dom"
+            "dom",
+            "esnext"
         ],
         "target": "es6",
         "downlevelIteration": true,
         "incremental": true,
-        "module": "commonjs",
+        "module": "esnext",
         "outDir": "./js"
     },
     "files": [
