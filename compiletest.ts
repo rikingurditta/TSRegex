@@ -19,6 +19,7 @@ for (let i = 0; i <= 9; i++)
     numsArr.push(new RESymbol('' + i));
 const numsRe = new REOr(numsArr);
 
+
 export default function compile(str: string, captures: Regex[] = []) {
     let orGroups = [[]];
     let currOut = orGroups[0];
@@ -34,7 +35,7 @@ export default function compile(str: string, captures: Regex[] = []) {
             } else if (char == 'w') {
                 currOut.push(alphaNumericRe);
             } else if (char == 'd') {
-                currOut.push(numsArr);
+                currOut.push(numsRe);
             } else {  // otherwise, push symbol
                 currOut.push(new RESymbol(char));
             }
