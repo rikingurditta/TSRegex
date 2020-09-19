@@ -1,25 +1,35 @@
 import NSet from './NSet';
 import { Regex, RESymbol, REConcat, RERepeat, REStar, REPlus, REOr } from './Regex';
 
-const specialChars = new NSet("{}[]()?+*|^$\\");
+const specialChars = new NSet<string>("{}[]()?+*|^$\\");
+const numChars = new NSet<string>("1234567890");
 
-export default function compile(str: string, captures = []) {
+export default function compile(str: string, captures: Regex[] = []) {
     let orGroups = [[]];
     let currOut = orGroups[0];
+    let escape = false;
     for (let i = 0; i < str.length; i++) {
-        let char = str.charAt(i);
+        let char: string = str.charAt(i);
 
+        if (escape) {
+            if (numChars.has(char))  // if number, get capture group
+                currOut.push(captures[parseInt(char) - 1]);
+            else  // otherwise, push symbol
+                currOut.push(new RESymbol(char));
+            continue;
+        }
         if (!specialChars.has(char))
             currOut.push(new RESymbol(char));
 
         if (char == '[') {
-            let inside = [];
+            let inside: Regex[] = [];
             let negate = false;
+            if (str.charAt(i + 1) == '^') {
+                negate = true;
+                i++;
+            }
             for (; str.charAt(i) != ']'; i++) {
-                if (str.charAt(i) == '^')
-                    negate = true;
-                else
-                    inside.push(new RESymbol(str.charAt(i)));
+                inside.push(new RESymbol(str.charAt(i)));
             }
             if (negate) {
                 // TODO
@@ -63,13 +73,13 @@ export default function compile(str: string, captures = []) {
         }
 
         if (char == '(') {
-            let level = 1;
+            let depth = 1;  // current depth in parenthesization
             let end = i + 1;
-            while (level != 0) {
+            while (depth != 0) {  // depth is 0 when we leave the parentheses
                 if (str.charAt(end) == '(')
-                    level++;
+                    depth++;
                 if (str.charAt(end) == ')')
-                    level--
+                    depth--;
                 end++;
             }
             end--;
@@ -80,10 +90,8 @@ export default function compile(str: string, captures = []) {
         }
     }
     let out = [];
-    let z = 0;
     for (let group of orGroups) {
         out.push(new REConcat(group));
-        z++;
     }
     return new REOr(out);
 }
