@@ -29,7 +29,7 @@ const forwardToBack: { [s: string]: string } = {
 
 // return an array of pairs of tokens and symbols for the regex string
 export function tokenize(w: String): [Token, string][] {
-	let out: [Token, string][] = []
+	let out: [Token, string][] = [];
 
 	// whether the next character should be escaped
 	let escape = false;
