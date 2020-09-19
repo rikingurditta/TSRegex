@@ -121,6 +121,7 @@ export class REStar extends Regex {
 			state.addTransition(EPSILON, insideNFA.start);
 		}
 		out.append(insideNFA);
+		start.accepting = true;
 		return out;
 	}
 }
@@ -179,6 +180,3 @@ let n = r.getNFA();
 // console.log(n.checkString('aaaaaa'), 'aaaaaa');
 // console.log(n.checkString('aaaaaaa'), 'aaaaaaa');
 // console.log(n.checkString('aaaaaaaa'), 'aaaaaaaa');
-
-globalThis.RESymbol = RESymbol;
-globalThis.REConcat = REConcat;

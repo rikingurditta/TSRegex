@@ -16,7 +16,8 @@ const metaToToken: { [w: string]: Token } = {
 	"^": Token.Caret,
 	"$": Token.End,
 	"\\": Token.Escape,
-}
+};
+
 export const brackets = new NSet<String>(["{", "}", "[", "[^", "]", "(", ")"]);
 export const forward = new NSet<String>(["{", "[", "[^", "("]);
 const forwardToBack: { [s: string]: string } = {
@@ -24,7 +25,7 @@ const forwardToBack: { [s: string]: string } = {
 	"[": "]",
 	"[^": "]",
 	"(": ")",
-}
+};
 
 
 // return an array of pairs of tokens and symbols for the regex string
@@ -101,7 +102,7 @@ let digits: NSet<String> = new NSet(['0', '1', '2', '3', '4', '5', '6', '7', '8'
 // return whether or not the brackets in the regex are well-formed,
 // i.e. all opened brackets are matched and closed, without overlaps,
 // and with only digits inside curly brackets
-function wellFormedBrackets(s: string): boolean {
+export function wellFormedBrackets(s: string): boolean {
 	// make sure that only digits are within { }
 	let curly = false;
 	for (let char of s) {

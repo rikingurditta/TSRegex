@@ -1,8 +1,23 @@
 import NSet from './NSet';
 import { Regex, RESymbol, REConcat, RERepeat, REStar, REPlus, REOr } from './Regex';
 
-const specialChars = new NSet<string>("{}[]()?+*|^$\\");
+const specialChars = new NSet<string>(".{}[]()?+*|^$\\");
 const numChars = new NSet<string>("1234567890");
+
+const allCharsArr = [];  // array of symbol regexes for each ASCII char
+for (let i = 32; i <= 127; i++)
+    allCharsArr.push(new RESymbol(String.fromCharCode(i)));
+const allCharsRe = new REOr(allCharsArr);
+
+const alphaNumericArr = [];
+for (let char of "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890")
+    alphaNumericArr.push(new RESymbol(char));
+const alphaNumericRe = new REOr(alphaNumericArr);
+
+const numsArr = [];
+for (let i = 0; i <= 9; i++)
+    numsArr.push(new RESymbol('' + i));
+const numsRe = new REOr(numsArr);
 
 export default function compile(str: string, captures: Regex[] = []) {
     let orGroups = [[]];
@@ -12,12 +27,29 @@ export default function compile(str: string, captures: Regex[] = []) {
         let char: string = str.charAt(i);
 
         if (escape) {
-            if (numChars.has(char))  // if number, get capture group
-                currOut.push(captures[parseInt(char) - 1]);
-            else  // otherwise, push symbol
+            if (numChars.has(char)) {  // if number, get capture group
+                // capture groups start at 1
+                if (0 < parseInt(char) && parseInt(char) - 1 < captures.length)
+                    currOut.push(captures[parseInt(char) - 1]);
+            } else if (char == 'w') {
+                currOut.push(alphaNumericRe);
+            } else if (char == 'd') {
+                currOut.push(numsArr);
+            } else {  // otherwise, push symbol
                 currOut.push(new RESymbol(char));
+            }
+            escape = false;
             continue;
         }
+
+        if (char == '\\') {
+            escape = true;
+        }
+
+        if (char == '.') {
+            currOut.push(allCharsRe);
+        }
+
         if (!specialChars.has(char))
             currOut.push(new RESymbol(char));
 
@@ -40,7 +72,7 @@ export default function compile(str: string, captures: Regex[] = []) {
         }
 
         if (char == '{') {
-            let start = i;
+            let start = i+1;
             for (; str.charAt(i) != '}'; i++)
                 ;  // get end of {}
             let x = str.substring(start, i).split(',');
@@ -96,10 +128,10 @@ export default function compile(str: string, captures: Regex[] = []) {
     return new REOr(out);
 }
 
-let nfa = compile('a|(x[abcde]z)').getNFA();
-console.log(nfa.checkString('xdz'));
-console.log(nfa.checkString('xyz'));
-console.log(nfa.checkString('a'));
-console.log(nfa.checkString('x'));
-console.log(nfa.checkString('xez'));
-console.log(nfa.checkString('xz'));
+// let nfa = compile('a|(x[abcde]z)').getNFA();
+// console.log(nfa.checkString('xdz'));
+// console.log(nfa.checkString('xyz'));
+// console.log(nfa.checkString('a'));
+// console.log(nfa.checkString('x'));
+// console.log(nfa.checkString('xez'));
+// console.log(nfa.checkString('xz'));

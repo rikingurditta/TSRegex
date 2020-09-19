@@ -1,10 +1,20 @@
 {
-	"compilerOptions": {
-        "lib": ["es6", "dom"],
+    "compilerOptions": {
+        "lib": [
+            "es6",
+            "dom"
+        ],
         "target": "es6",
         "downlevelIteration": true,
         "incremental": true,
-        "module": "commonjs",
+        "module": "es6",
         "outDir": "./js"
-    }
+    },
+    "files": [
+        "compiletest.ts",
+        "NFA.ts",
+        "NSet.ts",
+        "Regex.ts",
+        "Lexical.ts"
+    ]
 }
